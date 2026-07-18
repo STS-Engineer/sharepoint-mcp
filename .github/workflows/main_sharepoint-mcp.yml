@@ -31,13 +31,12 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Validate Python code
-        run: python -m py_compile server.py app.py
+        run: python -m py_compile server.py
 
       - name: Prepare deployment package
         run: |
           mkdir deployment
           cp server.py deployment/
-          cp app.py deployment/
           cp requirements.txt deployment/
           cp README.md deployment/ || true
           cp .env.example deployment/ || true
@@ -59,6 +58,10 @@ jobs:
       id-token: write
       contents: read
 
+    environment:
+      name: Production
+      url: https://sharepoint-mcp.azurewebsites.net
+
     steps:
       - name: Download deployment artifact
         uses: actions/download-artifact@v4
@@ -76,7 +79,7 @@ jobs:
       - name: Verify Azure connection
         run: |
           az account show \
-            --query "{subscription:name,subscriptionId:id,tenantId:tenantId}" \
+            --query "{subscription:name, subscriptionId:id, tenantId:tenantId}" \
             --output table
 
       - name: Deploy to Azure Web App
