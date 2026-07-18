@@ -31,12 +31,13 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Validate Python code
-        run: python -m py_compile server.py
+        run: python -m py_compile server.py app.py
 
       - name: Prepare deployment package
         run: |
           mkdir deployment
           cp server.py deployment/
+          cp app.py deployment/
           cp requirements.txt deployment/
           cp README.md deployment/ || true
           cp .env.example deployment/ || true
