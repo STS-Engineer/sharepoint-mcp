@@ -25,6 +25,7 @@ compat.FastMCP = LegacyFastMCP
 sys.modules["mcp.server.fastmcp"] = compat
 
 import server as legacy
+from app_auth_tools import list_drives, list_recent_documents
 
 from mcp.server.mcpserver import MCPServer
 from mcp.server.transport_security import TransportSecuritySettings
@@ -41,7 +42,10 @@ AZURE_HOST = "sharepoint-mcp-hqhfgeauhufbe5cv.francecentral-01.azurewebsites.net
 
 mcp = MCPServer("AVOCarbon SharePoint MCP", extensions=[apps])
 for tool_name, tool_fn in _CAPTURED:
-    mcp.add_tool(tool_fn, name=tool_name)
+    if tool_name not in {"list_drives", "list_recent_documents"}:
+        mcp.add_tool(tool_fn, name=tool_name)
+mcp.add_tool(list_drives, name="list_drives")
+mcp.add_tool(list_recent_documents, name="list_recent_documents")
 
 security = TransportSecuritySettings(
     allowed_hosts=[AZURE_HOST, f"{AZURE_HOST}:*", "localhost", "localhost:*"],
@@ -51,11 +55,12 @@ security = TransportSecuritySettings(
 async def health(_):
     return JSONResponse({
         "status": "ok",
-        "version": "1.3.0-complete",
+        "version": "1.3.1-app-auth",
         "mcp_apps": True,
         "stateless_http": True,
         "endpoint": "/mcp",
-        "legacy_tools": len(_CAPTURED),
+        "legacy_tools": len(_CAPTURED) - 2,
+        "app_auth_tools": 2,
         "total_tools": len(_CAPTURED) + 1,
     })
 
