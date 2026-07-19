@@ -96,6 +96,14 @@ async def _read_file_uri(file_uri: Any) -> tuple[bytes, str]:
     raise GraphError("Unsupported file_uri reference received from the connector runtime.")
 
 
+# Remove the legacy upload_file tool imported from server.py before registering
+# the OpenAI-compatible replacement under the same public tool name.
+try:
+    mcp._tool_manager._tools.pop("upload_file", None)
+except AttributeError:
+    pass
+
+
 @mcp.tool(name="upload_file")
 async def upload_file_openai_style(
     hostname: str,
@@ -139,7 +147,7 @@ async def upload_file_openai_style(
 async def health(_: object) -> JSONResponse:
     return JSONResponse({
         "status": "ok",
-        "version": "0.1.4",
+        "version": "0.1.5",
         "transport": "streamable-http",
         "upload_schema": "openai-sharepoint-file-uri",
     })
