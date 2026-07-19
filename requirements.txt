@@ -3,4 +3,5 @@ httpx>=0.28,<1
 python-dotenv>=1.0,<2
 starlette>=0.46,<1
 uvicorn[standard]>=0.34,<1
+gunicorn>=23,<24
 python-multipart>=0.0.20,<1
