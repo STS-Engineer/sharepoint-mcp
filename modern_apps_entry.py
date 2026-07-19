@@ -9,6 +9,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 
 from modern_apps_widget import apps
+from modern_upload_page import MODERN_UPLOAD_ROUTES
 from upload_ui import UPLOAD_UI_ROUTES
 
 mcp = MCPServer("AVOCarbon SharePoint MCP", extensions=[apps])
@@ -16,11 +17,11 @@ mcp = MCPServer("AVOCarbon SharePoint MCP", extensions=[apps])
 async def health(_: object) -> JSONResponse:
     return JSONResponse({
         "status": "ok",
-        "version": "1.0.0-apps-sdk",
+        "version": "1.1.0-apps-sdk",
         "mcp_apps": True,
         "extension": "io.modelcontextprotocol/ui",
         "widget": "ui://widget/sharepoint-upload-modern.html",
-        "browser_upload": "/upload",
+        "browser_upload": "/upload-modern",
     })
 
 @asynccontextmanager
@@ -31,6 +32,7 @@ async def lifespan(_: Starlette):
 starlette_app = Starlette(
     routes=[
         Route("/health", health, methods=["GET"]),
+        *MODERN_UPLOAD_ROUTES,
         *UPLOAD_UI_ROUTES,
         Mount("/", app=mcp.streamable_http_app()),
     ],
