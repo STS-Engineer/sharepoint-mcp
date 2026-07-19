@@ -15,6 +15,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 
 from server import GraphError, enc, mcp, out, path_enc, request, upload_bytes
+from upload_ui import UPLOAD_UI_ROUTES
 
 HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8000"))
@@ -119,9 +120,10 @@ async def upload_file_openai_style(
 async def health(_: object) -> JSONResponse:
     return JSONResponse({
         "status": "ok",
-        "version": "0.1.6",
+        "version": "0.2.0",
         "transport": "streamable-http",
         "upload_schema": "file-uri-string",
+        "browser_upload": "/upload",
     })
 
 
@@ -132,7 +134,11 @@ async def lifespan(_: Starlette):
 
 
 starlette_app = Starlette(
-    routes=[Route("/health", health, methods=["GET"]), Mount("/", app=mcp.streamable_http_app())],
+    routes=[
+        Route("/health", health, methods=["GET"]),
+        *UPLOAD_UI_ROUTES,
+        Mount("/", app=mcp.streamable_http_app()),
+    ],
     lifespan=lifespan,
 )
 
