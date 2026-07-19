@@ -25,6 +25,7 @@ except ModuleNotFoundError:
     sys.modules["mcp.server.fastmcp"] = compat
 
 from mcp.server.mcpserver import MCPServer
+from mcp.server.transport_security import TransportSecuritySettings
 from starlette.applications import Starlette
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
@@ -34,17 +35,25 @@ from modern_apps_widget import apps
 from modern_upload_page import MODERN_UPLOAD_ROUTES
 from upload_ui import UPLOAD_UI_ROUTES
 
+AZURE_HOST = "sharepoint-mcp-hqhfgeauhufbe5cv.francecentral-01.azurewebsites.net"
+
 mcp = MCPServer("AVOCarbon SharePoint MCP", extensions=[apps])
+
+security = TransportSecuritySettings(
+    allowed_hosts=[AZURE_HOST, f"{AZURE_HOST}:*", "localhost", "localhost:*", "127.0.0.1", "127.0.0.1:*"],
+    allowed_origins=["https://chatgpt.com", "https://chat.openai.com"],
+)
 
 async def health(_: object) -> JSONResponse:
     return JSONResponse({
         "status": "ok",
-        "version": "1.1.3-apps-sdk",
+        "version": "1.1.4-apps-sdk",
         "mcp_apps": True,
         "extension": "io.modelcontextprotocol/ui",
         "widget": "ui://widget/sharepoint-upload-modern.html",
         "browser_upload": "/upload-modern",
         "graph_backend": "legacy-helpers-via-shim",
+        "allowed_host": AZURE_HOST,
     })
 
 @asynccontextmanager
@@ -57,7 +66,7 @@ starlette_app = Starlette(
         Route("/health", health, methods=["GET"]),
         *MODERN_UPLOAD_ROUTES,
         *UPLOAD_UI_ROUTES,
-        Mount("/", app=mcp.streamable_http_app()),
+        Mount("/", app=mcp.streamable_http_app(transport_security=security)),
     ],
     lifespan=lifespan,
 )
