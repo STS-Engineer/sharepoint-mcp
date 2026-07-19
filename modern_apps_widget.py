@@ -3,7 +3,7 @@ import os
 from typing import Literal
 from mcp.server.apps import Apps, ResourceCsp
 
-WIDGET_URI = "ui://widget/sharepoint-upload-modern.html"
+WIDGET_URI = "ui://widget/sharepoint-upload-modern-v2.html"
 BASE_URL = os.getenv("PUBLIC_BASE_URL", "https://sharepoint-mcp-hqhfgeauhufbe5cv.francecentral-01.azurewebsites.net").rstrip("/")
 apps = Apps()
 
