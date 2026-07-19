@@ -1,4 +1,4 @@
-mcp[cli]>=1.27,<2
+mcp[cli] @ git+https://github.com/modelcontextprotocol/python-sdk.git@3a6f2996cdd8358957479791e8b26198c07d6a75
 httpx>=0.28,<1
 python-dotenv>=1.0,<2
 starlette>=0.46,<1
